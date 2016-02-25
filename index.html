@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/jsx">
+
+      console.log("sup my glip glops!!");
+
+      var colors = ["white","red", "blue", "yellow", "black", "orange", "purple"];
+
+      var Table = React.createClass({
+        render: () => <div style={tableStyle}><Ball/></div>
+      });
+
+
+      var numOfBalls = 1;
+
+      var Ball = React.createClass({
+        render: () => {
+          var ballStyle = {
+            position: "absolute",
+            left: ballLeft + "px",
+            top: ballTop + "px",
+            backgroundColor: "white",
+            borderRadius: "50%",
+            height: "23px",
+            width: "23px"
+          }
+
+          var balls = colors.map((color,index) => {
+            console.log(`index is ${index}`);
+            var bStyle = JSON.parse(JSON.stringify(ballStyle));
+            bStyle.backgroundColor = color;
+
+            var bLeft = bStyle.left;
+            var bLeftLength = bLeft.length;
+            var bLeft = Number(bLeft.slice(0,bLeftLength - 2));
+            bStyle.left = (bLeft + index * 25) + "px";
+            return <div key={index} style={bStyle}></div>
+          });
+
+
+          return (<div>{
+            balls
+          }</div>)
+
+
+
+        }
+      });
+
+
+      var tableStyle = {
+        position: "absolute",
+        backgroundColor: "green",
+        width: "75%",
+        height: "75%",
+        left: "12.5%",
+        top: "12.5%"
+      }
+      var ballLeft = 50;
+      var ballTop = 50;
+      var ballVx = 0;
+      var ballVy = 0;
+      var deltaBallX = 5;
+      var deltaBallY = 5;
+
+      var render = () => React.render(<Table/>,document.body);
+      render();
+
+      setInterval(()=> {
+        ballLeft += ballVx;
+        ballTop += ballVy;
+        render();
+      },50)
+
+      $(document).keydown((event)=> {
+        var keyCode = event.keyCode;
+        var codeVelocities = {
+          "37": -deltaBallX,
+          "39": deltaBallX,
+          "38": -deltaBallY,
+          "40": deltaBallY
+        }
+         if (keyCode === 37 || keyCode === 39)
+        {
+          ballLeft += codeVelocities[keyCode];
+        }
+        else if (keyCode === 38 || keyCode == 40)
+        {
+          ballTop += codeVelocities[keyCode]
+        }
+      });
+
+
+    </script>
+  </body>
+</html>
