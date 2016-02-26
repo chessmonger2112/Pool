@@ -12,9 +12,35 @@
       console.log("sup my glip glops!!");
 
       var colors = ["white","red", "blue", "yellow", "black", "orange", "purple"];
+      var pocketAttributes = [
+        {x: 0,y: 0,borderRadius: "0 0 75% 0"},
+        {x: 802,y: 0,borderRadius: "0 0 0 75%"},
+        {x: 802,y: 303,borderRadius: "75% 0 0 0"},
+        {x: 0,y: 303,borderRadius: "0 75% 0 0"}];
+
+      var Pocket = React.createClass({
+        render: () => {
+          var pocketStyle ={
+            // borderBottomRightRadius: "75%",
+            backgroundColor: "black",
+            height: "30px",
+            width: "30px",
+            position: "absolute"
+          };
+          var pockets = pocketAttributes.map((pocketAttribute,index) => {
+            var pStyle = JSON.parse(JSON.stringify(pocketStyle));
+            pStyle.left = pocketAttribute.x;
+            pStyle.top = pocketAttribute.y;
+            pStyle.borderRadius = pocketAttribute.borderRadius;
+            return (<div style={pStyle}></div>)
+          });
+
+          return (<div>{pockets}</div>)
+        }
+      });
 
       var Table = React.createClass({
-        render: () => <div style={tableStyle}><Ball/></div>
+        render: () => <div style={tableStyle}><Stick/><Pocket/><Ball/></div>
       });
 
 
@@ -33,26 +59,34 @@
           }
 
           var balls = colors.map((color,index) => {
-            console.log(`index is ${index}`);
             var bStyle = JSON.parse(JSON.stringify(ballStyle));
             bStyle.backgroundColor = color;
-
-            var bLeft = bStyle.left;
-            var bLeftLength = bLeft.length;
-            var bLeft = Number(bLeft.slice(0,bLeftLength - 2));
-            bStyle.left = (bLeft + index * 25) + "px";
+            bStyle.left = (ballLeft + index * 25) + "px";
             return <div key={index} style={bStyle}></div>
           });
-
 
           return (<div>{
             balls
           }</div>)
-
-
-
         }
       });
+
+
+      var Stick = React.createClass({
+        render: () => {
+          var stickStyle ={
+            position: "absolute",
+            height: "10px",
+            width: "150px",
+            backgroundColor: "brown",
+            left: stickLeft,
+            top : stickTop
+          }
+          return <div style={stickStyle}></div>
+        }
+      });
+
+
 
 
       var tableStyle = {
@@ -65,10 +99,14 @@
       }
       var ballLeft = 50;
       var ballTop = 50;
+      var stickLeft = 500;
+      var stickTop = 150;
       var ballVx = 0;
       var ballVy = 0;
       var deltaBallX = 5;
       var deltaBallY = 5;
+      var deltaStickX = 5;
+      var deltaStickY = 5;
 
       var render = () => React.render(<Table/>,document.body);
       render();
@@ -82,18 +120,18 @@
       $(document).keydown((event)=> {
         var keyCode = event.keyCode;
         var codeVelocities = {
-          "37": -deltaBallX,
-          "39": deltaBallX,
-          "38": -deltaBallY,
-          "40": deltaBallY
+          "37": -deltaStickX,
+          "39": deltaStickX,
+          "38": -deltaStickY,
+          "40": deltaStickY
         }
          if (keyCode === 37 || keyCode === 39)
         {
-          ballLeft += codeVelocities[keyCode];
+          stickLeft += codeVelocities[keyCode];
         }
         else if (keyCode === 38 || keyCode == 40)
         {
-          ballTop += codeVelocities[keyCode]
+          stickTop += codeVelocities[keyCode]
         }
       });
 
