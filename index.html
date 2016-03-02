@@ -73,18 +73,42 @@
 
       var Stick = React.createClass({
         render: () => {
-          var stickStyle ={
+          var stickStyle = {
             position: "absolute",
-            height: "10px",
-            width: "150px",
+            height: stickHeight,
+            width: stickWidth,
             backgroundColor: "brown",
             left: stickX,
-            top : stickTop
+            top : stickY
           }
-          return <div style={stickStyle}></div>
+          return <div id="stick" style={stickStyle}><StickFront/><StickEnd/></div> //
         }
       });
 
+        var StickEnd = React.createClass({
+          render: () => {
+            var endStyle = {
+              position: "absolute",
+              left: stickWidth,
+              height: stickHeight,
+              width: 20,
+              backgroundColor: "black"
+            }
+          return <div style={endStyle}></div>
+          }
+        });
+
+        var StickFront = React.createClass({
+          render: () => {
+            var frontStyle = {
+              position: "absolute",
+              backgroundColor: "white",
+              height: stickHeight,
+              width: 20
+            }
+            return <div style={frontStyle}></div>
+          }
+        })
 
       var tableStyle = {
         position: "absolute",
@@ -95,25 +119,27 @@
         top: "12.5%"
       }
       var stickX = 500;
-      var stickTop = 150;
-      var ballVx = 0;
+      var stickY = 150;
+      var stickAngle = 0;
+      var ballVx = 4;
       var ballVy = 0;
       var deltaBallX = 5;
       var deltaBallY = 5;
+      var deltaAngle = 5;
       var deltaStickX = 5;
       var deltaStickY = 5;
       var ballDiameter = 23;
+      var stickHeight = 10;
+      var stickWidth = 135
       var collision = false;
       var render = () => React.render(<Table/>,document.body);
-      render();
 
       setInterval(()=> {
-        // ballLeft += ballVx;
-        // ballTop += ballVy;
         if (collision)
         {
-          ballPositions.white.x += -4;
+          ballPositions.white.x += dir * ballVx;
         }
+        $("#stick").css("transform","rotate(" + stickAngle + "deg)");
         detection();
         render();
       },50)
@@ -122,10 +148,12 @@
       {
         var ballX = ballPositions.white.x + ballDiameter / 2;
 
-        var deltaX = Math.abs(stickX - ballX);
+        var deltaX = stickX - ballX;
+        var deltaXabs = Math.abs(deltaX);
         var ballRadius = ballDiameter / 2;
-        if (deltaX < ballRadius)
+        if (deltaXabs < ballRadius)
         {
+          dir = deltaX > 0 ? -1 : 1;
           collision = true;
           console.log("Intersection happened mother fucker!!");
         }
@@ -145,11 +173,19 @@
         }
         else if (keyCode === 38 || keyCode == 40)
         {
-          stickTop += codeVelocities[keyCode]
+          stickY += codeVelocities[keyCode]
+        }
+        else if(keyCode === 65)
+        {
+          stickAngle += deltaAngle;
+        }
+        else if (keyCode === 83)
+        {
+          stickAngle += -deltaAngle;
         }
       });
 
-
+// drag to move stick, move to change angle
     </script>
   </body>
 </html>
