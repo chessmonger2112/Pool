@@ -10,9 +10,16 @@
     <script type="text/jsx">
 
       console.log("sup my glip glops!!");
-
+      var PI = Math.PI;
       var colors = ["white","red", "blue", "yellow", "black", "orange", "purple"];
-      var ballPositions = {white: {x: 50,y: 150},red: {x: 55, y: 10},blue: {x:70 , y: 30},yellow: {x: 45,y: 45}, black: {x: 5,y: 200},orange:{x: 300, y: 200}, purple: {x: 150, y: 200}};
+      var ballPositions = {
+        white: {x: 50,y: 150},
+        red: {x: 55, y: 10},
+        blue: {x:70 , y: 30},
+        yellow: {x: 45,y: 45},
+        black: {x: 5,y: 200},
+        orange:{x: 300, y: 200},
+        purple: {x: 150, y: 200}};
 
       var pocketAttributes = [
         {x: 0,y: 0,borderRadius: "0 0 75% 0"},
@@ -59,8 +66,9 @@
           var balls = colors.map((color,index) => {
             var bStyle = JSON.parse(JSON.stringify(ballStyle));
             bStyle.backgroundColor = color;
-            bStyle.left = ballPositions[color].x;
-            bStyle.top = ballPositions[color].y;
+            var ball = ballPositions[color];
+            bStyle.left = ball.x;
+            bStyle.top = ball.y;
             return <div key={index} style={bStyle}></div>
           });
 
@@ -69,7 +77,6 @@
           }</div>)
         }
       });
-
 
       var Stick = React.createClass({
         render: () => {
@@ -137,7 +144,7 @@
       setInterval(()=> {
         if (collision)
         {
-          ballPositions.white.x += dir * ballVx;
+          ballPositions.white.sx += dir * ballVx;
         }
         $("#stick").css("transform","rotate(" + stickAngle + "deg)");
         detection();
@@ -147,11 +154,20 @@
       function detection()
       {
         var ballX = ballPositions.white.x + ballDiameter / 2;
+        var ballY = ballPositions.white.y + ballDiameter / 2;
+        stickYcom = stickY //+ stickHeight / 2;
+        stickYrotAdjust = stickYcom + (stickWidth / 2) * -Math.sin(stickAngle * PI / 180);
+        stickXrotAdjust = stickX + (stickWidth / 2) * (Math.cos(stickAngle * PI / 180) - 1);
+        // var deltaX = stickX - ballX;
+        var deltaX = stickXrotAdjust - ballX;
+        var deltaY = stickYrotAdjust - ballY;
 
-        var deltaX = stickX - ballX;
         var deltaXabs = Math.abs(deltaX);
+        // var deltaY = stickYcom - ballY;
+        var deltaYabs = Math.abs(deltaY);
         var ballRadius = ballDiameter / 2;
-        if (deltaXabs < ballRadius)
+
+        if (deltaXabs < ballRadius && deltaYabs < ballRadius + stickHeight / 3)
         {
           dir = deltaX > 0 ? -1 : 1;
           collision = true;
@@ -161,27 +177,27 @@
 
       $(document).keydown((event)=> {
         var keyCode = event.keyCode;
-        var codeVelocities = {
+        var stickVelocities = {
           "37": -deltaStickX,
           "39": deltaStickX,
           "38": -deltaStickY,
           "40": deltaStickY
         }
-         if (keyCode === 37 || keyCode === 39)
+        var angleVelocities = {
+          "65" : deltaAngle,
+          "83": -deltaAngle
+        }
+        if (keyCode === 37 || keyCode === 39)
         {
-          stickX += codeVelocities[keyCode];
+          stickX += stickVelocities[keyCode];
         }
         else if (keyCode === 38 || keyCode == 40)
         {
-          stickY += codeVelocities[keyCode]
+          stickY += stickVelocities[keyCode];
         }
-        else if(keyCode === 65)
+        else if(keyCode === 65 || keyCode === 83)
         {
-          stickAngle += deltaAngle;
-        }
-        else if (keyCode === 83)
-        {
-          stickAngle += -deltaAngle;
+          stickAngle += angleVelocities[keyCode];
         }
       });
 
